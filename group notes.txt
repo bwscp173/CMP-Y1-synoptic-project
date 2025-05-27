@@ -5,6 +5,8 @@ low pc ownership
 what ever we make it has to use a lot of icons, less text
 minimal css
 thin client computing
+security is less of a issue as all information being sent is already publicly available
+and increased security leads to higher computation
 
 notes:
 "You can make a website, app, software that would connect to a
