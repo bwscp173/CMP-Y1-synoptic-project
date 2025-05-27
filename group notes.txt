@@ -1,0 +1,20 @@
+add a readme for how to start the software
+inconsistent power
+low pc ownership
+2-ish phones per house hold
+what ever we make it has to use a lot of icons, less text
+minimal css
+thin client computing
+
+notes:
+"You can make a website, app, software that would connect to a
+hardware component.... anything!"
+
+
+ideas:
+weather app
+reporting housing app
+flood warning app/system
+
+
+we are selecting the weather and flood warning system in a app
