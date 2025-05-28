@@ -29,7 +29,10 @@ public class client{
 
         DataInputStream from_server = new DataInputStream(server_Socket.getInputStream());
         DataOutputStream to_server = new DataOutputStream(server_Socket.getOutputStream());
-        to_server.writeUTF("this is a message from the client, given to the server. Client time is: " + get_time());
+
+        to_server.writeUTF("52.6293,1.2979");  // send over the latitude and longitude
+        
+        System.out.println("waiting for confirmation");
         System.out.println("confirmation from server: " + from_server.readUTF());
         System.out.println("ending connection");
         server_Socket.close();
