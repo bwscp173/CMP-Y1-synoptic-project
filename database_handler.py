@@ -25,7 +25,7 @@ class database_handler():
     def __init__(self, conn:sqlite3.Connection):
         self.conn = conn
         self.database_cursor = self.conn.cursor()
-        self.api_call_freq = 5  # in seconds
+        self.api_call_freq = 60 * 10  # stores seconds. currently 10min
 
     def first_time_install(self):
         self.set_up_database()
@@ -46,6 +46,8 @@ class database_handler():
     {TABLE_COLUMNS[2]} FLOAT NOT NULL,
     {TABLE_COLUMNS[3]} TEXT,
     PRIMARY KEY (latitude, longitude)"""
+        print(table_columns_checks)
+        input()
 
         self.database_cursor.execute(f"CREATE TABLE IF NOT EXISTS weather_api_logs({table_columns_checks});")
         self.conn.commit()

@@ -1,3 +1,20 @@
+"""====================================================================================================
+
+File                     :  server.py
+
+date                     :  2/6/2025
+
+Description              :  will host the flask server
+
+History                  :  
+
+                            4/6/2025 - now uses the dictionary in 'weather_code_lookup.py'
+
+===================================================================================================="""
+
+
+
+
 #will attempt to make the server.java in this file as working with python for requests
 #is soo much easier and more portable. and the benefits of using java for portibility go down
 #when we assume that if someone wants to set up one of these servers, they can install python. 
@@ -18,18 +35,22 @@
 # i dont think i can set up a static IP on uni wifi so for the project we will have to type in some numbers for the client
 
 
-from datetime import datetime
-from datetime import timedelta
-import time
-import sqlite3  # for the databse of the most recent API call, moved away from pgadmin as this import allows just the .db file without any login information
 import requests
-import database_handler
+from datetime import datetime, timedelta
 from flask import Flask, request, render_template
+import sqlite3  # for the databse of the most recent API call, moved away from pgadmin as this import allows just the .db file without any login information
 
-app = Flask(__name__)
-__DAYS_TO_LOOK_AHEAD = 7  # leave this at 7
+#custom imports
+import database_handler
+import weather_code_lookup
 
-
+APP = Flask(__name__)
+conn = database_handler.setup_conn("weather_api_logs.db")
+if conn == None:
+    print("cannot connect to the database")
+    exit(-1)
+DATABASE_HANDL= database_handler.database_handler(conn)
+DAYS_TO_LOOK_AHEAD = 7  # leave this at 7
 TABLE_COLUMNS = ["latitude","longitude","last_time_updated","raw_api_data"]
 
 
@@ -37,10 +58,9 @@ class RequestInvalid(Exception):
   def __init__(self, errorMessage):
     super().__init__(errorMessage)
 
-
 def get_datetime() -> str:
   """returns yy:mm:dd hr:min:sec
-  will be used for logging.
+  will be used for logging.\n
   get_datetime()[:10] -> for just the date
   get_datetime()[11:] -> for just the time"""
   return str(datetime.now())[:-7]
@@ -51,18 +71,27 @@ def call_api(latitude:float, longitude:float):
     current_date = get_datetime()[:10]
     current_date_obj:datetime = datetime.strptime(current_date, "%Y-%m-%d")
 
-    end_date = str(current_date_obj + timedelta(days=__DAYS_TO_LOOK_AHEAD))[:10]
+    end_date = str(current_date_obj + timedelta(days=DAYS_TO_LOOK_AHEAD))[:10]
 
     url = "http://api.open-meteo.com/v1/forecast"
 
     params = {
         "latitude": latitude,
         "longitude": longitude,
-        "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode",
+        "daily": [
+            "temperature_2m_max",
+            "temperature_2m_min",
+            "precipitation_sum",
+            "weathercode",
+            "windspeed_10m_max"
+        ],
+        "hourly": ["visibility"],
         "timezone": "auto",
         "start_date": current_date,
-        "end_date": end_date,
+        "end_date": end_date
     }
+    # can add this for unix timestamp instead of datetime stuff
+    # "timeformat": "unixtime",
 
     response = requests.get(url, params=params)
 
@@ -73,7 +102,50 @@ def call_api(latitude:float, longitude:float):
         print(response.__dict__)  # very verbous logging can remove
         raise RequestInvalid(f"Invalid request sent, status code: {response.status_code}")
 
-@app.route("/", methods = ["GET","POST"])
+def get_usefull_information_from_api(latitude, longitude, api_data:dict) -> list[dict]:
+    daily = api_data["daily"]
+    hourly_visibility = api_data["hourly"]["visibility"]
+    print(f"{DAYS_TO_LOOK_AHEAD}-Day Forecast for lat={latitude}, lon={longitude}")
+
+    cleaned_data = []
+
+    data_day = None
+    total_day_vis = []
+    current_day_vis = []
+    for i in range(len(hourly_visibility)):
+        if data_day is None:
+            data_day = api_data["hourly"]["time"][i][8:10]
+
+        elif data_day != api_data["hourly"]["time"][i][8:10]:
+            #when a differnt day is detected
+            data_day = api_data["hourly"]["time"][i][8:10]
+            total_day_vis.append(current_day_vis)
+            current_day_vis = []
+
+        current_day_vis.append(hourly_visibility[i])
+        
+        if i == 0:
+            total_day_vis.append(current_day_vis)
+
+    for i in range(len(daily["time"])):
+        #daily_visibility = hourly_visibility / len(hourly_visibility)
+        avg_temp = api_data["daily"]["temperature_2m_max"][i] + api_data["daily"]["temperature_2m_min"][i] / 2  # in Celcius
+        precipitation_sum = daily["precipitation_sum"][i]  # in mm
+        day = daily["time"][i]
+        weather_code = daily["weathercode"][i]
+        weather_desc = weather_code_lookup.weather_codes[weather_code]
+        daily_avg_visibility = sum(total_day_vis[i]) / len(total_day_vis[i])
+        print(f"\nday {day}")
+        print("avg temp:",avg_temp)
+        print(f"Weather Code: {weather_code}")  # https://www.meteomatics.com/en/api/available-parameters/weather-parameter/general-weather-state/
+        print(f"Weather Desc: {weather_desc}")
+        print(f"Precipitation: {precipitation_sum} mm")
+        print("daily_avg_visibility:",daily_avg_visibility)
+        cleaned_data.append({"day":day,"avg_temp":avg_temp,"weather_desc":weather_desc,"precipitation_sum":precipitation_sum,"daily_avg_visibility":daily_avg_visibility})
+    
+    return cleaned_data
+
+@APP.route("/", methods = ["GET","POST"])
 def main_page():
     #try to use as many try and excepts as possible as its vital for the server not to crash
     # if a error happens 'skip' will go True and then the client should be given the basic index.html
@@ -81,21 +153,23 @@ def main_page():
 
     if request.method == "POST":
         try:
-            client_latitude:float = request.form.get("latitude")
-            client_longitude:float = request.form.get("longitude")
+            client_latitude:float = min(max(float(request.form.get("latitude")),-90),90)
+            client_longitude:float = min(max(float(request.form.get("longitude")),-180),180)
         except:
             skip = True
             print(f"[{get_datetime()}]client sent a invalid packet, serving basic page")
         
         if not skip:
+            api_response = call_api(client_latitude, client_longitude)
+            data = get_usefull_information_from_api(client_latitude, client_longitude, api_response)
             try:
-                api_response = call_api(client_latitude,client_longitude)
+                pass
             except:
                 skip = True
                 print(f"[{get_datetime()}]something went wrong with the api call, serving basic page")
         
         if not skip:
-            return api_response
+            return data
 
     if request.method == "GET" or skip:
         return render_template("index.html")
@@ -132,4 +206,4 @@ if __name__ == "__main__":
     print("should_api_call: ", should_api_call)
     
 
-    app.run()
+    APP.run()
