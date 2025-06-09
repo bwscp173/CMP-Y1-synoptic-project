@@ -33,13 +33,27 @@ function geoFindMe() {
     }
 }
 
-geoFindMe()
 
-// const submit_button = document.getElementById("submit");
-// submit_button.addEventListener("click",()=>{
-//     await fetch('https://jsonplaceholder.typicode.com/posts/1',
-//         {method: "POST"
-//         }
-//     )
-// })
-// server_response = await res.json();
+const submit_button = document.getElementById("submit");
+const my_location_lat = document.getElementById("latitude");
+const my_location_long = document.getElementById("longitude");
+
+submit_button.addEventListener("click",async ()=>{
+    alert("sending the stuff");
+    console.log("sending stuff");
+    const request_form = new FormData();
+    request_form.append("latitude",parseFloat(my_location_lat.value));
+    request_form.append("longitude",parseFloat(my_location_long.value));
+    //JSON.stringify({"latitude":parseFloat(my_location_lat.value), "longitude":parseFloat(my_location_long.value)});
+    alert(request_form);
+    const response = await fetch('http://127.0.0.1:5000/',
+        {
+            method: "POST",
+            body: request_form,
+        }
+    );
+    console.log(await response.json())
+});
+
+    
+geoFindMe()

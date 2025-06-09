@@ -152,10 +152,12 @@ def main_page():
 
     if request.method == "POST":
         try:
-            client_latitude:float = min(max(float(request.form.get("latitude")),-90),90)
-            client_longitude:float = min(max(float(request.form.get("longitude")),-180),180)
+            #print("this to dict: ",request.form.to_dict()) for all given keys/values
+            client_latitude:float = min(max(float(request.form["latitude"]),-90),90)
+            client_longitude:float = min(max(float(request.form["longitude"]),-180),180)
         except:
             skip = True
+            print(request.__dict__)
             print(f"[{get_datetime()}]client sent a invalid packet, serving basic page")
         
         if not skip:
@@ -184,17 +186,31 @@ def main_page():
             
             else:  # getting the data
                 dictionary_saved_data = {}
-                saved_data = DATABASE_HANDL.run_sql_command(f"SELECT * FROM weather_api_logs WHERE latitude={client_latitude} and longitude={client_longitude};")[0]
+
+                all_days_columns = []
+
+                for i in range(DATABASE_HANDL.days_to_store):
+                    for j in range(len(database_handler.EXPECTED_COLUMNS)):
+                        column_with_day = f"day_{i}_{database_handler.EXPECTED_COLUMNS[j]}"
+                        all_days_columns.append(column_with_day)
+
+
+                saved_data = DATABASE_HANDL.run_sql_command(f"SELECT {','.join(all_days_columns)} FROM weather_api_logs WHERE latitude={client_latitude} and longitude={client_longitude};")[0]
 
                 # doing all this so the returned data is always list[dict]
-                data = [] 
+                print("THE SAVED DATA:",saved_data)
+                print("DATABASE_HANDL.days_to_store:",DATABASE_HANDL.days_to_store)
+                data = []
+                total_index = 0
                 for i in range(DATABASE_HANDL.days_to_store):
+                    print("i:",i)
                     dictionary_saved_data={}
-                    for j in range(len(database_handler.EXPECTED_COLUMNS)-2):  # adding 2 to removed the latitude longitude last_time_updated
+                    for j in range(len(database_handler.EXPECTED_COLUMNS)):
                         print("j:",j)
                         columns = database_handler.EXPECTED_COLUMNS[j]
-                        dictionary_saved_data[columns] = saved_data[j+3]
+                        dictionary_saved_data[columns] = saved_data[total_index]
                         print(dictionary_saved_data)
+                        total_index += 1
                     data.append(dictionary_saved_data)
 
                 print("dictionary_saved_data: ", dictionary_saved_data)
