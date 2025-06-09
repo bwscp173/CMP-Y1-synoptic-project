@@ -34,3 +34,12 @@ function geoFindMe() {
 }
 
 geoFindMe()
+
+// const submit_button = document.getElementById("submit");
+// submit_button.addEventListener("click",()=>{
+//     await fetch('https://jsonplaceholder.typicode.com/posts/1',
+//         {method: "POST"
+//         }
+//     )
+// })
+// server_response = await res.json();
