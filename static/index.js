@@ -38,7 +38,8 @@ const submit_button = document.getElementById("submit");
 const my_location_lat = document.getElementById("latitude");
 const my_location_long = document.getElementById("longitude");
 
-submit_button.addEventListener("click", async () => {
+submit_button.addEventListener("click", async (event) => {
+    event.preventDefault();
     alert("sending the stuff");
     console.log("sending stuff");
     const request_form = new FormData();
@@ -74,9 +75,12 @@ function sortData(weatherData) {
 
         const { avg_temp, daily_avg_visibility, precipitation_sum, weather_desc } = day;
 
-        dayDiv.className = `day day-${dayCount}`;
+        dayDiv.className = `day-${dayCount}`;
+        dayDiv.classList.add("day");
         dayDiv.innerHTML = `
+            <div class="day-header">
             <h3>Day: ${dayCount}</h3>
+            </div>
             <p>Avg Temp: ${avg_temp}°F</p>
             <p>Visibility: ${daily_avg_visibility} m</p>
             <p>Precipitation: ${precipitation_sum} mm</p>
