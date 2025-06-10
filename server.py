@@ -134,7 +134,7 @@ def get_usefull_information_from_api(latitude, longitude, api_data:dict) -> list
             total_day_vis.append(current_day_vis)
 
     for i in range(len(daily["time"])):
-        avg_temp = api_data["daily"]["temperature_2m_max"][i] + api_data["daily"]["temperature_2m_min"][i] / 2  # in Celcius
+        avg_temp = round(api_data["daily"]["temperature_2m_max"][i] + api_data["daily"]["temperature_2m_min"][i] / 2,2)  # in F, rounds to 2dp
         precipitation_sum = daily["precipitation_sum"][i]  # in mm
         day = daily["time"][i]
         weather_code = daily["weathercode"][i]
