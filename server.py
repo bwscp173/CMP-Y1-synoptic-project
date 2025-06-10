@@ -38,8 +38,6 @@ History                  :
 import requests
 from datetime import datetime, timedelta
 from flask import Flask, request, render_template
-import sqlite3  # for the databse of the most recent API call, moved away from pgadmin as this import allows just the .db file without any login information
-import os
 #custom imports
 import database_handler
 import weather_code_lookup

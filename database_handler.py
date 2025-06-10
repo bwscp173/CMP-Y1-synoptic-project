@@ -1,12 +1,11 @@
 import sqlite3
 from datetime import datetime
-from datetime import timedelta
 import time
 
 TABLE_COLUMNS = ["latitude","longitude","last_time_updated","raw_api_data"]
 EXPECTED_COLUMNS = ['avg_temp', 'daily_avg_visibility', 'day', 'precipitation_sum', 'weather_desc', 'precipitation_sum', 'daily_avg_visibility']
 
-def setup_conn(fileName:set = "weather_api_logs.db") -> sqlite3.Connection | None:
+def setup_conn(fileName:str = "weather_api_logs.db") -> sqlite3.Connection | None:
     try:
         #setting check_same_thread=False, as when this is imported it counts as a differnt thread
         conn = sqlite3.Connection(fileName, check_same_thread=False)
@@ -77,16 +76,6 @@ class database_handler():
     END;""")
         #unixepoch() returns the unix timestamp
         self.conn.commit()
-
-    def create_insert_trigger(self):
-        """a simple trigger function to set the 'last_time_updated' to a unix timestamp"""
-        #         self.database_cursor.execute("""CREATE TRIGGER insert_with_time BEFORE INSERT
-        # ON weather_api_logs
-        # BEING
-        #     INSERT INTO weather_api_logs()
-
-        # """)
-        pass
 
     def run_sql_command(self, query: str, params=""):
         """runs *any* SQL command given onto the db only checks
