@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <script src="{{url_for('static', filename='index.js')}}" defer></script>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Group 28 synoptic</title>
    </head>
    <body>
-      <p>you are on the group 28 synoptic project website!</p>
-
-      <form>
-         <label for="latitude">latitude:</label><br>
-         <input type="text" id="latitude" name="latitude" value="26.2056"><br>
-         <label for="longitude">longitude:</label><br>
-         <input type="text" id="longitude" name="longitude" value="28.0337"><br><br>
-      </form>
-      <input type="submit" id="submit" value="Submit">
+      <div class="locationFinder">
+         <p>you are on the group 28 synoptic project website!</p>
+         <form>
+            <label for="latitude">latitude:</label><br>
+            <input type="text" id="latitude" name="latitude" value="26.2056"><br>
+            <label for="longitude">longitude:</label><br>
+            <input type="text" id="longitude" name="longitude" value="28.0337"><br><br>
+         </form>
+         <input type="submit" id="submit" value="Submit">
+      </div>
+      
+      <div id="content">
+         
+      </div>
+      <script src="{{url_for('static', filename='index.js')}}" defer></script>
    </body>
-</html>
+   </html>

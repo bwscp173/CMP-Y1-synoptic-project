@@ -1,4 +1,4 @@
-function update_forms_values(latitude,longitude){
+function update_forms_values(latitude, longitude) {
     const form_latitude = document.getElementById("latitude");
     const form_longitude = document.getElementById("longitude");
 
@@ -7,10 +7,10 @@ function update_forms_values(latitude,longitude){
     // latitude = Math.max(Math.min(latitude,90),-90);
     // longitude = Math.max(Math.min(longitude,180),-180);
 
-    console.log("setting latitude and longitude:  {longitude: "+longitude+",latitude: "+latitude+"}");
+    console.log("setting latitude and longitude:  {longitude: " + longitude + ",latitude: " + latitude + "}");
 
-    form_latitude.setAttribute("value",latitude);
-    form_longitude.setAttribute("value",longitude);
+    form_latitude.setAttribute("value", latitude);
+    form_longitude.setAttribute("value", longitude);
 }
 
 function geoFindMe() {
@@ -19,7 +19,7 @@ function geoFindMe() {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
-        update_forms_values(latitude,longitude)
+        update_forms_values(latitude, longitude)
     }
 
     function error() {
@@ -38,12 +38,12 @@ const submit_button = document.getElementById("submit");
 const my_location_lat = document.getElementById("latitude");
 const my_location_long = document.getElementById("longitude");
 
-submit_button.addEventListener("click",async ()=>{
+submit_button.addEventListener("click", async () => {
     alert("sending the stuff");
     console.log("sending stuff");
     const request_form = new FormData();
-    request_form.append("latitude",parseFloat(my_location_lat.value));
-    request_form.append("longitude",parseFloat(my_location_long.value));
+    request_form.append("latitude", parseFloat(my_location_lat.value));
+    request_form.append("longitude", parseFloat(my_location_long.value));
     //JSON.stringify({"latitude":parseFloat(my_location_lat.value), "longitude":parseFloat(my_location_long.value)});
     alert(request_form);
     const response = await fetch('http://127.0.0.1:5000/',
@@ -52,8 +52,37 @@ submit_button.addEventListener("click",async ()=>{
             body: request_form,
         }
     );
-    console.log(await response.json())
+    const data = await response.json();
+    console.log("received data:", data);
+    sortData(data);
 });
 
-    
+
 geoFindMe()
+
+const content = document.getElementById("content");
+function sortData(weatherData) {
+    for (let dayCount = 0; dayCount < 8; dayCount++) {
+        const day = weatherData[dayCount];
+
+        if (!day) {
+            console.warn(`No data found for day ${dayCount}`);
+            continue;
+        }
+
+        const dayDiv = document.createElement("div");
+
+        const { avg_temp, daily_avg_visibility, precipitation_sum, weather_desc } = day;
+
+        dayDiv.className = `day day-${dayCount}`;
+        dayDiv.innerHTML = `
+            <h3>Day: ${dayCount}</h3>
+            <p>Avg Temp: ${avg_temp}°F</p>
+            <p>Visibility: ${daily_avg_visibility} m</p>
+            <p>Precipitation: ${precipitation_sum} mm</p>
+            <p>Weather: ${weather_desc}</p>
+        `;
+
+        content.appendChild(dayDiv);
+    }
+}
