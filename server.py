@@ -198,18 +198,13 @@ def main_page():
                 saved_data = DATABASE_HANDL.run_sql_command(f"SELECT {','.join(all_days_columns)} FROM weather_api_logs WHERE latitude={client_latitude} and longitude={client_longitude};")[0]
 
                 # doing all this so the returned data is always list[dict]
-                print("THE SAVED DATA:",saved_data)
-                print("DATABASE_HANDL.days_to_store:",DATABASE_HANDL.days_to_store)
                 data = []
                 total_index = 0
                 for i in range(DATABASE_HANDL.days_to_store):
-                    print("i:",i)
                     dictionary_saved_data={}
                     for j in range(len(database_handler.EXPECTED_COLUMNS)):
-                        print("j:",j)
                         columns = database_handler.EXPECTED_COLUMNS[j]
                         dictionary_saved_data[columns] = saved_data[total_index]
-                        print(dictionary_saved_data)
                         total_index += 1
                     data.append(dictionary_saved_data)
 

@@ -52,9 +52,8 @@ submit_button.addEventListener("click", async (event) => {
     );
     const data = await response.json();
     console.log("received data:", data);
-    loadFromFile("weather_data.json")
     sortData(data);
-    addDownloadButton(data);
+    addDownloadfileButton(data);
 });
 
 
@@ -74,22 +73,49 @@ function downloadObjectAsJson(exportObj){
 
 
 //view weatherData from file:
-function loadFromFile(fileName){
-    console.log("work in progress rn")
+function loadAndDisplayFromFile(fileobj){
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        var jsonData2 = JSON.parse(e.target.result);
+        sortData(jsonData2)
+    };
+    reader.onerror = function() {
+        console.error('cannot read file:', fileobj.name);
+    };
+    reader.readAsText(fileobj);
 }
 
+const form_elem = document.getElementsByTagName("form").item(0)
+function addfileButton(){
+    var fileButton = document.createElement("input")
+    fileButton.type = "file"
+    fileButton.id = "loadFile"
+    fileButton.name = "load data"
+    fileButton.accept = ".json"
 
-function addDownloadButton(download_weather_data){
+    fileButton.addEventListener("change", (event) => {
+        event.preventDefault();
+        loadAndDisplayFromFile(event.target.files[0])
+        
+    })
+
+    form_elem.appendChild(fileButton)
+}
+addfileButton()
+
+function addDownloadfileButton(download_weather_data){
     if (download_weather_data){
-        var downloadButton = document.createElement("input")
-        downloadButton.value = "Download"
-        downloadButton.id = "Download"
-        downloadButton.addEventListener("click", (event) => {
+        //downfileButton = document.getElementById("Download")
+        var downfileButton = document.createElement("input")
+        downfileButton.value = "Download"
+        downfileButton.id = "Download"
+        downfileButton.addEventListener("click", (event) => {
             event.preventDefault();
-                downloadObjectAsJson(download_weather_data)
+            downloadObjectAsJson(download_weather_data)
             })
-        const form_elem = document.getElementsByTagName("form").item(0)
-        form_elem.appendChild(downloadButton)
+        form_elem.appendChild(downfileButton)
     }
 }
 
