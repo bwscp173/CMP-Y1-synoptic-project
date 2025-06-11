@@ -2,6 +2,7 @@
     --primary-color: #caf0f8;
     --secondary-color: #90e0ef;
     --background-color: #00b4d8;
+    --background-color-hover: #0586a0;
     --text-color: #333;
     --font-family: 'Arial', sans-serif;
 }
@@ -101,6 +102,10 @@ form {
     border: 2px solid var(--primary-color);
     text-transform: uppercase;
     border-radius: 10px;
+    cursor: pointer;
+}
+#submit:hover{
+    background-color: var(--background-color-hover);
 }
 
 #Download{
@@ -117,6 +122,10 @@ form {
     border: 2px solid var(--primary-color);
     text-transform: uppercase;
     border-radius: 10px;
+    cursor: pointer;
+}
+#Download:hover{
+    background-color: var(--background-color-hover);
 }
 
 #loadFile{

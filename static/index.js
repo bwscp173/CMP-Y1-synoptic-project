@@ -107,7 +107,15 @@ addfileButton()
 
 function addDownloadfileButton(download_weather_data){
     if (download_weather_data){
-        //downfileButton = document.getElementById("Download")
+        var downfileButtonExist = document.getElementById("Download")
+        if (downfileButtonExist){
+            console.log("button does exist")
+            downfileButtonExist.remove()
+        }
+        else{
+            console.log("button does not exist")
+        }
+        
         var downfileButton = document.createElement("input")
         downfileButton.value = "Download"
         downfileButton.id = "Download"
@@ -121,8 +129,23 @@ function addDownloadfileButton(download_weather_data){
 
 geoFindMe()
 
-const content = document.getElementById("content");
+
+function remove_prev_data(){
+    var content_div = document.getElementById("content");
+    if (content_div){
+        //alert("removing content div")
+        content_div.remove()
+    }
+    var bodyelem = document.getElementsByTagName("body").item(0);
+    var newdiv = document.createElement("div")
+    newdiv.id = "content"
+    bodyelem.append(newdiv)
+    console.log("adding new div")
+    console.log("still in funct")
+}
 function sortData(weatherData) {
+    remove_prev_data()
+    var content = document.getElementById("content");
     for (let dayCount = 0; dayCount < 8; dayCount++) {
         const day = weatherData[dayCount];
 
