@@ -40,13 +40,10 @@ const my_location_long = document.getElementById("longitude");
 
 submit_button.addEventListener("click", async (event) => {
     event.preventDefault();
-    alert("sending the stuff");
-    console.log("sending stuff");
     const request_form = new FormData();
     request_form.append("latitude", parseFloat(my_location_lat.value));
     request_form.append("longitude", parseFloat(my_location_long.value));
     //JSON.stringify({"latitude":parseFloat(my_location_lat.value), "longitude":parseFloat(my_location_long.value)});
-    alert(request_form);
     const response = await fetch('http://127.0.0.1:5000/',
         {
             method: "POST",
@@ -55,9 +52,46 @@ submit_button.addEventListener("click", async (event) => {
     );
     const data = await response.json();
     console.log("received data:", data);
+    loadFromFile("weather_data.json")
     sortData(data);
+    addDownloadButton(data);
 });
 
+
+//download weatherData:
+//function found on https://stackoverflow.com/questions/19721439/download-json-object-as-a-file-from-browser
+//top comment by 'mlimper'
+function downloadObjectAsJson(exportObj){
+    exportName = "weather_data.json"
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+    var downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href",     dataStr);
+    downloadAnchorNode.setAttribute("download", exportName);
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+
+//view weatherData from file:
+function loadFromFile(fileName){
+    console.log("work in progress rn")
+}
+
+
+function addDownloadButton(download_weather_data){
+    if (download_weather_data){
+        var downloadButton = document.createElement("input")
+        downloadButton.value = "Download"
+        downloadButton.id = "Download"
+        downloadButton.addEventListener("click", (event) => {
+            event.preventDefault();
+                downloadObjectAsJson(download_weather_data)
+            })
+        const form_elem = document.getElementsByTagName("form").item(0)
+        form_elem.appendChild(downloadButton)
+    }
+}
 
 geoFindMe()
 

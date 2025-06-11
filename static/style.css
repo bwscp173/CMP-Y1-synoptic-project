@@ -102,3 +102,19 @@ form {
     text-transform: uppercase;
     border-radius: 10px;
 }
+
+#Download{
+    text-align: center;
+    width: 200px;
+    background-color: var(--background-color);
+    color: var(--primary-color);
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-weight: 700;
+    font-size: 30px;
+    border: 2px solid var(--primary-color);
+    text-transform: uppercase;
+    border-radius: 10px;
+}
