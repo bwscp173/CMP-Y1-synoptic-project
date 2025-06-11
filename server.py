@@ -161,6 +161,8 @@ def main_page():
             print(f"[{get_datetime()}]client sent a invalid packet, serving basic page")
         
         if not skip:
+            print("client_lat:",client_latitude)
+            print("client_long:",client_longitude)
             print("0")
             should_api_call:bool = DATABASE_HANDL.check_if_api_call(client_latitude, client_longitude)
             print("THIS should_api_call",should_api_call)
@@ -182,7 +184,7 @@ def main_page():
                     print("data looks like",data)
                     DATABASE_HANDL.save_data(data,client_latitude,client_longitude)
                     print("4 - saved data")
-                    print("big boy results - ",DATABASE_HANDL.run_sql_command("SELECT * FROM weather_api_logs;"))
+                    #print("big boy results - ",DATABASE_HANDL.run_sql_command("SELECT * FROM weather_api_logs;"))
             
             else:  # getting the data
                 dictionary_saved_data = {}
@@ -208,7 +210,7 @@ def main_page():
                         total_index += 1
                     data.append(dictionary_saved_data)
 
-                print("dictionary_saved_data: ", dictionary_saved_data)
+                #print("dictionary_saved_data: ", dictionary_saved_data)
 
         if not skip:
             return data

@@ -113,6 +113,7 @@ form {
     width: 200px;
     background-color: var(--background-color);
     color: var(--primary-color);
+    margin-top: 10px;
     padding-top: 6px;
     padding-bottom: 6px;
     padding-right: 10px;
@@ -133,6 +134,7 @@ form {
     width: 250px;
     background-color: var(--background-color);
     color: var(--primary-color);
+    margin-top: 10px;
     padding-top: 6px;
     padding-bottom: 6px;
     padding-right: 10px;

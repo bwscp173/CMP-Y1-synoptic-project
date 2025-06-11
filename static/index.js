@@ -4,9 +4,12 @@ function update_forms_values(latitude, longitude) {
 
     //removing client validation as it would lead to a lighter wieght client
     //+ it will get checked server side
-    // latitude = Math.max(Math.min(latitude,90),-90);
-    // longitude = Math.max(Math.min(longitude,180),-180);
-
+    // try {
+    //     latitude = Math.max(Math.min(latitude,90),-90);
+    //     longitude = Math.max(Math.min(longitude,180),-180);
+    // } catch (error) {
+        // }
+        
     console.log("setting latitude and longitude:  {longitude: " + longitude + ",latitude: " + latitude + "}");
 
     form_latitude.setAttribute("value", latitude);
@@ -14,18 +17,18 @@ function update_forms_values(latitude, longitude) {
 }
 
 function geoFindMe() {
-
+    
     function success(position) {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
+        const latitude = Math.max(Math.max(position.coords.latitude,-90),90);
+        const longitude = Math.max(Math.min(position.coords.longitude,-180),180);
+        
         update_forms_values(latitude, longitude)
     }
 
     function error() {
         console.error("Unable to retrieve your location");
     }
-
+    
     if (!navigator.geolocation) {
         console.error("Geolocation is not supported by your browser");
     } else {
@@ -40,6 +43,19 @@ const my_location_long = document.getElementById("longitude");
 
 submit_button.addEventListener("click", async (event) => {
     event.preventDefault();
+    if (typeof my_location_lat.value != "number" | typeof my_location_long.value != "number"){
+        try {
+            my_location_lat.value = parseFloat(my_location_lat.value)
+            my_location_long.value = parseFloat(my_location_long.value)
+        } catch (error) {
+            alert("invalid location\nlatidude must be a number between -90 and 90\nlongitude must be a number between -180 and 180.")
+            return null
+        }
+    }
+    if (!((my_location_lat.value >= -90 && my_location_lat.value <= 90) && (my_location_long.value >= -180 && my_location_long.value <= 180))){
+        alert("invalid location\nlatidude must be between -90 and 90\nlongitude must be between -180 and 180.")
+        return null
+    }
     const request_form = new FormData();
     request_form.append("latitude", parseFloat(my_location_lat.value));
     request_form.append("longitude", parseFloat(my_location_long.value));
