@@ -19,8 +19,8 @@ function update_forms_values(latitude, longitude) {
 function geoFindMe() {
     
     function success(position) {
-        const latitude = Math.max(Math.max(position.coords.latitude,-90),90);
-        const longitude = Math.max(Math.min(position.coords.longitude,-180),180);
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
         
         update_forms_values(latitude, longitude)
     }
@@ -163,28 +163,32 @@ function sortData(weatherData) {
     remove_prev_data()
     var content = document.getElementById("content");
     for (let dayCount = 0; dayCount < 8; dayCount++) {
-        const day = weatherData[dayCount];
+        const dayData = weatherData[dayCount];
 
-        if (!day) {
+        if (!dayData) {
             console.warn(`No data found for day ${dayCount}`);
             continue;
         }
 
         const dayDiv = document.createElement("div");
 
-        const { avg_temp, daily_avg_visibility, precipitation_sum, weather_desc } = day;
-
+        var { avg_temp, daily_avg_visibility, day, precipitation_sum, weather_desc } = dayData;
+        const {latitude,longitude} = weatherData[weatherData.length-1];
+        if (dayCount == 0){
+            day = day+"<br>latitude: "+latitude+",<br>longitude: "+longitude;
+        }
+        dayDiv.innerHTML = `
+        <div class="day-header">
+        <h3>Day: ${day}</h3>
+        </div>
+        <p>Avg Temp: ${avg_temp}°F</p>
+        <p>Visibility: ${daily_avg_visibility} m</p>
+        <p>Precipitation: ${precipitation_sum} mm</p>
+        <p>Weather: ${weather_desc}</p>
+        `;
+        
         dayDiv.className = `day-${dayCount}`;
         dayDiv.classList.add("day");
-        dayDiv.innerHTML = `
-            <div class="day-header">
-            <h3>Day: ${dayCount}</h3>
-            </div>
-            <p>Avg Temp: ${avg_temp}°F</p>
-            <p>Visibility: ${daily_avg_visibility} m</p>
-            <p>Precipitation: ${precipitation_sum} mm</p>
-            <p>Weather: ${weather_desc}</p>
-        `;
 
         content.appendChild(dayDiv);
     }

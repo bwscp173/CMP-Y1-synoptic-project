@@ -135,12 +135,12 @@ class database_handler():
         try:
             db_results = float(db_results[0])  # indexing here as fetchone() returns a list
         except TypeError: # if the db is empty then trying to index at 0 will cause a type error, so there must be nothing in the db thus call the API for data
-            print("returning early")
+            print("[check_if_api_call]returning early db is empty for that pk")
             return True
         
         #db_time = datetime.strptime(db_results, "%Y-%m-%d %H:%M:%S").__add__(timedelta(hours=1))  # hardcoding adding 1 hr as we are in gmt+1 timezone
         current_time = time.time()  # datetime.strptime(get_datetime(), "%Y-%m-%d %H:%M:%S")
-        print("diff in time:",current_time - db_results)
+        #print("diff in time:",current_time - db_results)
 
         return db_results + self.api_call_freq < current_time
     
@@ -189,7 +189,7 @@ class database_handler():
 
                 print(f"[{get_datetime()}]UPDATING data at unix time:", time.time())
                 self.run_sql_command(f"UPDATE weather_api_logs SET {update_both_column_value} WHERE latitude={latitude} AND longitude={longitude};")
-            print(self.run_sql_command(f"SELECT latitude, longitude, last_time_updated FROM weather_api_logs;"))
+            #print(self.run_sql_command(f"SELECT latitude, longitude, last_time_updated FROM weather_api_logs;"))
 
 if __name__ == "__main__":
     #this should be testing for how often the API should be called
