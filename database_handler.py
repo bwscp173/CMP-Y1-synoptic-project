@@ -4,7 +4,7 @@ from datetime import timedelta
 import time
 
 TABLE_COLUMNS = ["latitude","longitude","last_time_updated","raw_api_data"]
-EXPECTED_COLUMNS = ['avg_temp', 'daily_avg_visibility', 'day', 'precipitation_sum', 'weather_desc', 'precipitation_sum', 'daily_avg_visibility']
+EXPECTED_COLUMNS = ['avg_temp', 'daily_avg_visibility', 'day', 'weather_desc', 'precipitation_sum']
 
 def setup_conn(fileName:set = "weather_api_logs.db") -> sqlite3.Connection | None:
     try:
@@ -28,6 +28,7 @@ class database_handler():
         self.database_cursor = self.conn.cursor()
         self.api_call_freq = 60 * 10  # stores seconds. currently 10min
         self.days_to_store = days_to_store + 1 # the +1 to account for the current day so it gets the next 7 days not 6. 
+        self.cursor = conn.cursor()
 
     def first_time_install(self):
         self.set_up_database()
@@ -60,8 +61,9 @@ class database_handler():
     last_time_updated FLOAT NOT NULL,
     {','.join(all_days_columns)},
     PRIMARY KEY (latitude, longitude)"""
+        print(all_days_columns)
 
-        self.run_sql_command(f"CREATE TABLE IF NOT EXISTS weather_api_logs({table_columns_checks});")
+        self.cursor.execute(f"CREATE TABLE IF NOT EXISTS weather_api_logs({table_columns_checks});")
         self.conn.commit()
         print("created the db's table")
     
@@ -70,6 +72,7 @@ class database_handler():
         'last_time_updated' gets updated to the current time"""
         self.database_cursor.execute(f"""CREATE TRIGGER auto_update_time BEFORE UPDATE
     on weather_api_logs
+    FOR EACH ROW
     BEGIN
         UPDATE weather_api_logs
         set last_time_updated=unixepoch()

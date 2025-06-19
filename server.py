@@ -14,10 +14,6 @@ History                  :
 
 
 
-
-#will attempt to make the server.java in this file as working with python for requests
-#is soo much easier and more portable. and the benefits of using java for portibility go down
-#when we assume that if someone wants to set up one of these servers, they can install python. 
 #description will get the latitude and longitude from the client, maybe the city name.
 #and this server will fetch the data from API's like "https://wttr.in/norwich" and give only the needed
 #information to the client

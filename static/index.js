@@ -1,14 +1,6 @@
 function update_forms_values(latitude, longitude) {
     const form_latitude = document.getElementById("latitude");
     const form_longitude = document.getElementById("longitude");
-
-    //removing client validation as it would lead to a lighter wieght client
-    //+ it will get checked server side
-    // try {
-    //     latitude = Math.max(Math.min(latitude,90),-90);
-    //     longitude = Math.max(Math.min(longitude,180),-180);
-    // } catch (error) {
-        // }
         
     console.log("setting latitude and longitude:  {longitude: " + longitude + ",latitude: " + latitude + "}");
 
